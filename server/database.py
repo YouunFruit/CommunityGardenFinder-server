@@ -1,10 +1,22 @@
-# database.py
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "sqlite:///./test.db"
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Replace these with your Docker MySQL credentials
+DATABASE_URL = "mysql+asyncmy://root:90E8FA90E8FA@localhost:3309/cgf_db"
+
+# Async database engine
+engine = create_async_engine(DATABASE_URL, echo=True)
+
+# Session maker for dependency injection
+AsyncSessionLocal = sessionmaker(
+    bind=engine, class_=AsyncSession, expire_on_commit=False
+)
+
+# Base class for models
 Base = declarative_base()
+
+# Dependency to get DB session
+async def get_db():
+    async with AsyncSessionLocal() as session:
+        yield session
