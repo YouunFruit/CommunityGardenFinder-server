@@ -6,6 +6,7 @@ from database import Base
 class User(Base):  # Existing User model
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), index=True)
     email = Column(String(100), unique=True, index=True)
     hashed_password = Column(String(255))
     gardens = relationship("Garden", back_populates="owner")  # One-to-many relationship

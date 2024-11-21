@@ -3,6 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class UserBase(BaseModel):
+    username: str
     email: str
 
 class UserCreate(UserBase):
@@ -12,7 +13,7 @@ class UserOut(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class GardenBase(BaseModel):
     name: str
@@ -33,4 +34,4 @@ class GardenOut(GardenBase):
     owner_id: int
 
     class Config:
-        orm_mode = True
+        rom_attributes = True
