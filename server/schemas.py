@@ -42,23 +42,26 @@ class GardenBase(BaseModel):
     photo: Optional[str] = None
     is_public: bool = True
     joinable: bool = True
-    tags: List[str] = Field(default_factory=list)
+    tags: Optional[List[str]] = []
 
-    @validator("tags", each_item=True)
-    def validate_tag(cls, tag: str):
-        if not tag or not tag.strip():
-            raise ValueError("Tag names must be non-empty strings.")
-        return tag
+
 
 
 class GardenCreate(GardenBase):
     owner_id: int
+    tags: List[str]
 
 
 class GardenOut(GardenBase):
     id: int
     owner_id: int
-    tags: Optional[List[TagOut]] = []  # Include tag details in the response
+    tags: List[TagOut]
+
+    @validator("tags", each_item=True)
+    def validate_tag(cls, tag: TagOut):
+        if not tag.name or not tag.name.strip():
+            raise ValueError("Tag names must be non-empty strings.")
+        return tag
 
     class Config:
         from_attributes = True

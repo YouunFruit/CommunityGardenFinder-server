@@ -1,6 +1,6 @@
 # models.py
 from sqlalchemy import Table, Column, Integer, String, Float, Text, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
@@ -43,5 +43,10 @@ class Garden(Base):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     owner = relationship("User", back_populates="gardens")
-    tags = relationship("Tag", secondary=garden_tags, back_populates="gardens")
+    tags: Mapped[list["Tag"]] = relationship(
+        "Tag",
+        secondary=garden_tags,
+        back_populates="gardens",
+        lazy="selectin"  # Specify the loading strategy
+    )
 
