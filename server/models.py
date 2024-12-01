@@ -1,5 +1,6 @@
 # models.py
-from sqlalchemy import Table, Column, Integer, String, Float, Text, Boolean, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, Float, Text, Boolean, ForeignKey, INTEGER
+from sqlalchemy.dialects.mysql import DATETIME
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -10,7 +11,15 @@ class User(Base):  # Existing User model
     username = Column(String(50), index=True)
     email = Column(String(100), unique=True, index=True)
     hashed_password = Column(String(255))
-    gardens = relationship("Garden", back_populates="owner")
+    gardens = relationship("Garden", secondary="user_gardens",back_populates="members" )
+
+# Association table for gardens and user, many-to-many
+
+class UserGardens(Base):
+    __tablename__ = "user_gardens"
+    user_id =Column("user_id", Integer, ForeignKey("users.id"), primary_key=True)
+    garden_id =Column("garden_id", Integer, ForeignKey("gardens.id"), primary_key=True)
+
 
 # Association table for gardens and tags
 garden_tags = Table(
@@ -42,7 +51,9 @@ class Garden(Base):
     joinable = Column(Boolean, default=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    owner = relationship("User", back_populates="gardens")
+    members = relationship("User", secondary="user_gardens", back_populates="gardens")
+
+    owner = relationship("User", back_populates="gardens", foreign_keys=[owner_id])
     tags: Mapped[list["Tag"]] = relationship(
         "Tag",
         secondary=garden_tags,

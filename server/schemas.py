@@ -33,6 +33,8 @@ class TagOut(TagBase):
         from_attributes = True
 
 
+
+
 class GardenBase(BaseModel):
     name: str
     description: Optional[str] = None
@@ -65,3 +67,15 @@ class GardenOut(GardenBase):
 
     class Config:
         from_attributes = True
+
+
+class UserGardenOut(BaseModel):
+    user_id: int
+    garden_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class AddUserToGardenRequest(BaseModel):
+    user_id: int
