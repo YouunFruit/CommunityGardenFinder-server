@@ -75,8 +75,8 @@ async def get_garden(garden_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Garden not found")
     return garden
 
-@app.get("/gardens/{garden_id}/members", response_model=List[schemas.UserGardenOut])
-async def get_members(garden_id: int, db: Session = Depends(get_db)):
+@app.get("/gardens/{garden_id}/members", response_model=List[schemas.test])
+async def get_members(garden_id: int, db: AsyncSession = Depends(get_db)):
     """
     Get all members of a specific garden.
     """
@@ -84,6 +84,16 @@ async def get_members(garden_id: int, db: Session = Depends(get_db)):
     if not members:
         raise HTTPException(status_code=404, detail="No members found for this garden")
     return members
+
+@app.get("/users/{user_id}/gardens", response_model=List[schemas.test2])
+async def get_members(user_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Get all members of a specific garden.
+    """
+    gardens = await crud.get_gardens_for_user(db=db, user_id=user_id)
+    if not gardens:
+        raise HTTPException(status_code=404, detail="No gardens found for this User")
+    return gardens
 
 
 
@@ -96,15 +106,20 @@ async def add_user_to_garden(
     """
     Add a user to a garden.
     """
-    garden = await crud.get_garden(db=db, garden_id=garden_id)
-    if not garden:
-        raise HTTPException(status_code=404, detail="Garden not found")
+    # garden = await crud.get_garden(db=db, garden_id=garden_id)
+    # if not garden:
+    #     raise HTTPException(status_code=404, detail="Garden not found")
+    #
+    # user = await crud.get_user_by_id(db=db, user_id=user_id)
+    # if not user:
+    #     raise HTTPException(status_code=404, detail="User not found")
 
-    user = await crud.get_user_by_id(db=db, user_id=user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
 
-    return await crud.add_user_to_garden(db=db, user_id=user_id, garden_id=garden_id)
+    try:
+        user_garden = await crud.add_user_to_garden(db, user_id=user_id, garden_id=garden_id)
+        return user_garden
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 ##
 # "name": "garden",

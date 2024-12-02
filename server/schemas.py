@@ -79,3 +79,11 @@ class UserGardenOut(BaseModel):
 
 class AddUserToGardenRequest(BaseModel):
     user_id: int
+
+class test(BaseModel):
+    user_id:int
+    username: str
+
+class test2(BaseModel):
+    garden_id:int
+    name: str
