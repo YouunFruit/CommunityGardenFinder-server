@@ -31,8 +31,15 @@ async def get_user_by_email(db: Session, email: str):
 async def get_user_by_id(db: Session, user_id: int):
     stmt = select(models.User).where(models.User.id == user_id)
     result = await db.execute(stmt)
-    user = result.scalars().first()
-    return user
+    user_data = result.fetchone()  # Fetch the first result
+
+    if user_data:
+        return {
+            "id": user_data.id,
+            "username": user_data.username,
+            "email": user_data.contact
+        }
+    return None
 
 async def get_all_users(db: AsyncSession = Depends(get_db()),skip: int = 0, limit: int = 10):
     stmt = select(models.User)  # Create the SQLAlchemy select query

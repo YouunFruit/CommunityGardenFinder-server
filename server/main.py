@@ -51,11 +51,11 @@ async def get_user_by_id(user_id: int, db: AsyncSession = Depends(get_db)):
 
 # Authenticate user
 @app.post("/login")
-async def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
+async def login(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     db_user = await crud.get_user_by_email(db, email=user.email)
     if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
-    return {"message": "Login successful"}
+    return {"message": "Login successful","user":user.username,"email":user.email}
 
 # Create a new garden
 @app.post("/gardens", response_model=schemas.GardenOut)
